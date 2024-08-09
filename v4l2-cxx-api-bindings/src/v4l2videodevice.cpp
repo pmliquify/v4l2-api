@@ -332,8 +332,9 @@ int V4L2VideoDevice::setTriggerMode(int triggerMode)
 }
 
 int V4L2VideoDevice::setIOMode(int ioMode)
-{
-        return setControl("IO Mode", ioMode);
+{       // "IO Mode" 
+        // IMX568 "Flash Mode"
+        return setControl("Flash Mode", ioMode);
 }
 
 int V4L2VideoDevice::setFrameRate(int frameRate)

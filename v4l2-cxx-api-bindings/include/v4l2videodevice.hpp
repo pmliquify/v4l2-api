@@ -32,13 +32,13 @@ public:
         int setIOMode(int ioMode);
         int setFrameRate(int frameRate);
 
-protected:
-        int m_deviceFd;
-        int m_subDeviceFd;
-        
         int setControl(unsigned int id, int value);
         int setExtControl(unsigned int id, unsigned int type, int value);
         int setControl(std::string name, int value);
+
+protected:
+        int m_deviceFd;
+        int m_subDeviceFd;
 
 private:
         struct v4l2_format m_format;

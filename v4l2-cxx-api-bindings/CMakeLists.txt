@@ -10,6 +10,8 @@ configure_file (
     "${PROJECT_BINARY_DIR}/include/version.h"
 )
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_library(v4l2-cxx-api
         STATIC
         src/errno.cpp
@@ -18,4 +20,12 @@ add_library(v4l2-cxx-api
         src/v4l2videodevice.cpp)
 target_include_directories(v4l2-cxx-api PUBLIC include)
 
-add_subdirectory(examples)
+# C Interop Library
+add_library(v4l2-c-api
+        SHARED
+        src/interop/image.cpp
+        src/interop/v4l2videodevice.cpp)
+target_include_directories(v4l2-c-api PUBLIC include)
+target_link_libraries(v4l2-c-api PRIVATE v4l2-cxx-api)
+
+# add_subdirectory(examples)
