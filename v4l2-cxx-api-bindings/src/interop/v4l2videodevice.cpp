@@ -133,7 +133,13 @@ int V4L2VideoDevice_setFrameRate(V4L2VideoDevice *video_device_ptr, int frameRat
 }
 
 // Function to set a v4l2 control in V4L2VideoDevice
-int V4L2VideoDevice_setControl(V4L2VideoDevice *video_device_ptr, unsigned int id, int value)
+int V4L2VideoDevice_setControlById(V4L2VideoDevice *video_device_ptr, unsigned int id, int value)
 {
     return video_device_ptr->setControl(id, value);
+}
+
+// Function to set a v4l2 control in V4L2VideoDevice
+int V4L2VideoDevice_setControlByName(V4L2VideoDevice *video_device_ptr, const char *name, int value)
+{
+    return video_device_ptr->setControl(name, value);
 }

@@ -32,7 +32,8 @@ int V4L2VideoDevice_setTriggerMode(V4L2VideoDevice *video_device_ptr, int trigge
 int V4L2VideoDevice_setIOMode(V4L2VideoDevice *video_device_ptr, int ioMode);
 int V4L2VideoDevice_setFrameRate(V4L2VideoDevice *video_device_ptr, int frameRate);
 
-int V4L2VideoDevice_setControl(V4L2VideoDevice *video_device_ptr, unsigned int id, int value);
+int V4L2VideoDevice_setControlById(V4L2VideoDevice *video_device_ptr, unsigned int id, int value);
+int V4L2VideoDevice_setControlByName(V4L2VideoDevice *video_device_ptr, const char *name, int value);
 
 #ifdef __cplusplus
 }
