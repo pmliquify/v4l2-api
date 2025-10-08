@@ -50,12 +50,11 @@ private:
 
         V4L2Image *m_image;
         unsigned int m_bufferCount;
-        unsigned int m_nextBufferIndex;
 
         int initBuffers(int count);
         void clearBuffers();
         int enqueueBuffer(int bufferIndex);
-        struct v4l2_buffer * dequeueBuffer(int bufferIndex);
+        struct v4l2_buffer * dequeueBuffer();
         int waitForNextBuffer(int timeout);
 
         void handleErrorForOpen(const char *path, int err);
