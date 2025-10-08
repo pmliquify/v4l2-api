@@ -13,8 +13,7 @@ V4L2VideoDevice::V4L2VideoDevice() :
         m_deviceFd(0),
         m_subDeviceFd(0),
         m_buffers(NULL),
-        m_bufferCount(0),
-        m_nextBufferIndex(0)
+        m_bufferCount(0)
 {
         m_image = new V4L2Image();
 }
@@ -234,9 +233,9 @@ int V4L2VideoDevice::getNextImage(Image *&image, int timeout, bool lastImage)
                 while(ret == 0) {
                         ret = waitForNextBuffer(0);
                         if (ret == 0) {
-                                dequeueBuffer(m_nextBufferIndex);
-                                enqueueBuffer(m_nextBufferIndex);
-                                m_nextBufferIndex = (m_nextBufferIndex + 1) % m_bufferCount;
+                                struct v4l2_buffer *buffer = dequeueBuffer();
+                                int actualBufferIndex = buffer->index;
+                                enqueueBuffer(actualBufferIndex);
                         }
                 }
         } 
@@ -245,7 +244,7 @@ int V4L2VideoDevice::getNextImage(Image *&image, int timeout, bool lastImage)
                 return ret;
         }
 
-        struct v4l2_buffer *buffer = dequeueBuffer(m_nextBufferIndex);
+        struct v4l2_buffer *buffer = dequeueBuffer();
         if (buffer == NULL) {
                 return -3;
         }
@@ -487,8 +486,7 @@ int V4L2VideoDevice::initBuffers(int bufferCount)
                         return -1;
                 }
         }
-        m_nextBufferIndex = 0;
-
+        
         return 0;
 }
 
@@ -517,6 +515,10 @@ void V4L2VideoDevice::clearBuffers()
 int V4L2VideoDevice::enqueueBuffer(int bufferIndex)
 {
         struct v4l2_buffer *buffer = &m_buffers[bufferIndex].buffer;
+        // Restore required fields (may have been overwritten by VIDIOC_DQBUF)
+        buffer->type = m_format.type;
+        buffer->memory = V4L2_MEMORY_MMAP;
+        buffer->index = bufferIndex;
         buffer->flags = 0;
 	if (-1 == ioctl(m_deviceFd, VIDIOC_QBUF, buffer)) {
                 handleErrorForIoctl(VIDIOC_QBUF, errno);
@@ -528,9 +530,12 @@ int V4L2VideoDevice::enqueueBuffer(int bufferIndex)
         return 0;
 }
 
-struct v4l2_buffer * V4L2VideoDevice::dequeueBuffer(int bufferIndex)
+struct v4l2_buffer * V4L2VideoDevice::dequeueBuffer()
 {
-        struct v4l2_buffer *buffer = &m_buffers[bufferIndex].buffer;
+        // Just reuse a dummy buffer to dequeue the next available buffer
+        // because type, memory and flags are the only fields set by the app for dequeueing.
+        // The driver fills index which tells us which buffer is ready.
+        struct v4l2_buffer *buffer = &m_buffers[0].buffer;
         buffer->flags = 0;
 	if (-1 == ioctl(m_deviceFd, VIDIOC_DQBUF, buffer)) {
                 handleErrorForIoctl(VIDIOC_DQBUF, errno);
@@ -542,10 +547,7 @@ struct v4l2_buffer * V4L2VideoDevice::dequeueBuffer(int bufferIndex)
 
         int actualIndex = buffer->index;
 
-        if (actualIndex != bufferIndex) {
-                m_buffers[bufferIndex].buffer.index = bufferIndex;
-        }
-
+        // We return the actual dequeued buffer
         return &m_buffers[actualIndex].buffer;
 }
 
