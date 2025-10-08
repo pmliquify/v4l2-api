@@ -22,6 +22,7 @@ public:
         int streamOff();
         int getNextImage(Image *&image, int timeout, bool lastImage = true);
         int releaseImage(Image *image);
+        int releaseImageByIndex(int bufferIndex); // Zero-copy compatible: release by buffer index
         int getImage(Image *&image, int timeout, bool lastImage = true);
 
         int setExposure(int exposure);

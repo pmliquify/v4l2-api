@@ -22,6 +22,7 @@ int V4L2VideoDevice_streamOn(V4L2VideoDevice *video_device_ptr, int bufferCount 
 int V4L2VideoDevice_streamOff(V4L2VideoDevice *video_device_ptr);
 int V4L2VideoDevice_getNextImage(V4L2VideoDevice *video_device_ptr, Image *&image, int timeout, bool lastImage = true);
 int V4L2VideoDevice_releaseImage(V4L2VideoDevice *video_device_ptr, Image *image);
+int V4L2VideoDevice_releaseImageByIndex(V4L2VideoDevice *video_device_ptr, int bufferIndex);
 int V4L2VideoDevice_getImage(V4L2VideoDevice *video_device_ptr, Image *&image, int timeout, bool lastImage = true);
 
 int V4L2VideoDevice_setExposure(V4L2VideoDevice *video_device_ptr, int exposure);

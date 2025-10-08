@@ -1,4 +1,5 @@
 #include <interop/image.hpp>
+#include <v4l2image.hpp>
 #include <string>
 
 using namespace std;
@@ -113,6 +114,16 @@ unsigned int Image_planeSizeAt(Image *image_ptr, unsigned int index)
     if (index < image_ptr->planes().size())
     {
         return sizeof(image_ptr->plane(index));
+    }
+    return 0;
+}
+
+unsigned short Image_bufferIndex(Image *image_ptr)
+{
+    V4L2Image *v4l2Image = dynamic_cast<V4L2Image*>(image_ptr);
+    if (v4l2Image != nullptr)
+    {
+        return v4l2Image->bufferIndex();
     }
     return 0;
 }

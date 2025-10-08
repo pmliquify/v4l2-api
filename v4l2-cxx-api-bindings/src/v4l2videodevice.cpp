@@ -250,29 +250,30 @@ int V4L2VideoDevice::getNextImage(Image *&image, int timeout, bool lastImage)
                 return -3;
         }
 
-        m_image->setBufferIndex(m_nextBufferIndex);
+        int actualBufferIndex = buffer->index;
+
+        m_image->setBufferIndex(actualBufferIndex);
         unsigned long timestamp = buffer->timestamp.tv_sec*1e3 + buffer->timestamp.tv_usec/1e3;
 
         switch (m_format.type) {
         case V4L2_BUF_TYPE_VIDEO_CAPTURE:
                 m_image->init(m_format.fmt.pix.width, m_format.fmt.pix.height, m_format.fmt.pix.bytesperline,
-                        m_format.fmt.pix.sizeimage, buffer->bytesused, m_format.fmt.pix.pixelformat, 
+                        m_format.fmt.pix.sizeimage, buffer->bytesused, m_format.fmt.pix.pixelformat,
                         buffer->sequence, timestamp);
                 m_image->planes().resize(1);
-                m_image->planes()[0] = m_buffers[m_nextBufferIndex].ptrs[0];
+                m_image->planes()[0] = m_buffers[actualBufferIndex].ptrs[0];
                 break;
 
         case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
                 m_image->init(m_format.fmt.pix_mp.width, m_format.fmt.pix_mp.height, m_format.fmt.pix_mp.plane_fmt->bytesperline,
-                        m_format.fmt.pix_mp.plane_fmt->sizeimage, buffer->bytesused, m_format.fmt.pix_mp.pixelformat, 
+                        m_format.fmt.pix_mp.plane_fmt->sizeimage, buffer->bytesused, m_format.fmt.pix_mp.pixelformat,
                         buffer->sequence, timestamp);
                 m_image->planes().resize(buffer->length);
                 for (unsigned int planeIndex = 0; planeIndex < buffer->length; planeIndex++) {
-                        m_image->planes()[planeIndex] = m_buffers[m_nextBufferIndex].ptrs[planeIndex];
+                        m_image->planes()[planeIndex] = m_buffers[actualBufferIndex].ptrs[planeIndex];
                 }
                 break;
         }
-        
         image = m_image;
         return 0;
 }
@@ -286,8 +287,18 @@ int V4L2VideoDevice::releaseImage(Image *image)
         if (-1 == enqueueBuffer(m_image->bufferIndex())) {
                 return -1;
         }
+        return 0;
+}
 
-        m_nextBufferIndex = (m_nextBufferIndex + 1) % m_bufferCount;
+int V4L2VideoDevice::releaseImageByIndex(int bufferIndex)
+{
+        if (bufferIndex < 0 || bufferIndex >= (int)m_bufferCount) {
+                return -1;
+        }
+
+        if (-1 == enqueueBuffer(bufferIndex)) {
+                return -1;
+        }
         return 0;
 }
 
@@ -528,7 +539,14 @@ struct v4l2_buffer * V4L2VideoDevice::dequeueBuffer(int bufferIndex)
 	if(buffer->flags & V4L2_BUF_FLAG_QUEUED) {
                 return NULL;
 	}
-        return buffer;
+
+        int actualIndex = buffer->index;
+
+        if (actualIndex != bufferIndex) {
+                m_buffers[bufferIndex].buffer.index = bufferIndex;
+        }
+
+        return &m_buffers[actualIndex].buffer;
 }
 
 int V4L2VideoDevice::waitForNextBuffer(int timeout)

@@ -84,6 +84,12 @@ int V4L2VideoDevice_releaseImage(V4L2VideoDevice *video_device_ptr, Image *image
     return video_device_ptr->releaseImage(image);
 }
 
+// Function to release image by buffer index
+int V4L2VideoDevice_releaseImageByIndex(V4L2VideoDevice *video_device_ptr, int bufferIndex)
+{
+    return video_device_ptr->releaseImageByIndex(bufferIndex);
+}
+
 // Function to get image from V4L2VideoDevice
 int V4L2VideoDevice_getImage(V4L2VideoDevice *video_device_ptr, Image *&image, int timeout, bool lastImage)
 {

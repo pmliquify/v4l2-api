@@ -59,6 +59,9 @@ extern "C"
     // Function to get a plane by index
     unsigned const char *Image_planeAt(Image *image_ptr, unsigned int index);
 
+    // Function to get buffer index (V4L2Image specific)
+    unsigned short Image_bufferIndex(Image *image_ptr);
+
 #ifdef __cplusplus
 }
 #endif
