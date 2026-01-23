@@ -170,8 +170,8 @@ public partial class V4L2VideoDeviceInterop : IDisposable
     [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_destroy")]
     private static partial void destroy(IntPtr videoDevicePtr);
 
-    [DllImport(LibraryName, EntryPoint = "V4L2VideoDevice_open")]
-    private static extern int open(IntPtr videoDevicePtr, string devicePath, string subDevicePath);
+    [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_open", StringMarshalling = StringMarshalling.Utf8)]
+    private static partial int open(IntPtr videoDevicePtr, string devicePath, string subDevicePath);
 
     [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_close")]
     private static partial int close(IntPtr videoDevicePtr);
@@ -179,8 +179,8 @@ public partial class V4L2VideoDeviceInterop : IDisposable
     [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_getFormat")]
     private static partial int getFormat(IntPtr videoDevicePtr);
 
-    [DllImport(LibraryName, EntryPoint = "V4L2VideoDevice_setFormat")]
-    private static extern int setFormat(IntPtr videoDevicePtr, string pixelFormat);
+    [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_setFormat", StringMarshalling = StringMarshalling.Utf8)]
+    private static partial int setFormat(IntPtr videoDevicePtr, string pixelFormat);
 
     [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_printFormat")]
     private static partial int printFormat(IntPtr videoDevicePtr);
@@ -194,8 +194,8 @@ public partial class V4L2VideoDeviceInterop : IDisposable
     [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_streamOff")]
     private static partial int streamOff(IntPtr videoDevicePtr);
 
-    [DllImport(LibraryName, EntryPoint = "V4L2VideoDevice_getNextImage")]
-    private static extern int getNextImage(IntPtr videoDevicePtr, out IntPtr image, int timeout, bool lastImage = false);
+    [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_getNextImage")]
+    private static partial int getNextImage(IntPtr videoDevicePtr, out IntPtr image, int timeout, [MarshalAs(UnmanagedType.Bool)] bool lastImage = false);
 
     [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_releaseImage")]
     private static partial int releaseImage(IntPtr videoDevicePtr, IntPtr image);
@@ -203,8 +203,8 @@ public partial class V4L2VideoDeviceInterop : IDisposable
     [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_releaseImageByIndex")]
     private static partial int releaseImageByIndex(IntPtr videoDevicePtr, int bufferIndex);
 
-    [DllImport(LibraryName, EntryPoint = "V4L2VideoDevice_getImage")]
-    private static extern int getImage(IntPtr videoDevicePtr, out IntPtr image, int timeout, bool lastImage = false);
+    [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_getImage")]
+    private static partial int getImage(IntPtr videoDevicePtr, out IntPtr image, int timeout, [MarshalAs(UnmanagedType.Bool)] bool lastImage = false);
 
     [LibraryImport(LibraryName, EntryPoint = "V4L2VideoDevice_setExposure")]
     private static partial int setExposure(IntPtr videoDevicePtr, int exposure);

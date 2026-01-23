@@ -532,23 +532,41 @@ int V4L2VideoDevice::enqueueBuffer(int bufferIndex)
 
 struct v4l2_buffer * V4L2VideoDevice::dequeueBuffer()
 {
-        // Just reuse a dummy buffer to dequeue the next available buffer
-        // because type, memory and flags are the only fields set by the app for dequeueing.
-        // The driver fills index which tells us which buffer is ready.
-        struct v4l2_buffer *buffer = &m_buffers[0].buffer;
-        buffer->flags = 0;
-	if (-1 == ioctl(m_deviceFd, VIDIOC_DQBUF, buffer)) {
+        struct v4l2_buffer tempBuffer;
+        memset(&tempBuffer, 0, sizeof(tempBuffer));
+        tempBuffer.type = m_format.type;
+        tempBuffer.memory = V4L2_MEMORY_MMAP;
+
+        struct v4l2_plane planes[VIDEO_MAX_PLANES];
+        if (m_format.type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
+                memset(planes, 0, sizeof(planes));
+                tempBuffer.length = VIDEO_MAX_PLANES;
+                tempBuffer.m.planes = planes;
+        }
+
+	if (-1 == ioctl(m_deviceFd, VIDIOC_DQBUF, &tempBuffer)) {
                 handleErrorForIoctl(VIDIOC_DQBUF, errno);
                 return NULL;
         }
-	if(buffer->flags & V4L2_BUF_FLAG_QUEUED) {
-                return NULL;
-	}
 
-        int actualIndex = buffer->index;
+        int actualIndex = tempBuffer.index;
 
-        // We return the actual dequeued buffer
-        return &m_buffers[actualIndex].buffer;
+        struct v4l2_buffer *actualBuffer = &m_buffers[actualIndex].buffer;
+        actualBuffer->flags = tempBuffer.flags;
+        actualBuffer->bytesused = tempBuffer.bytesused;
+        actualBuffer->timestamp = tempBuffer.timestamp;
+        actualBuffer->sequence = tempBuffer.sequence;
+        actualBuffer->field = tempBuffer.field;
+
+        if (m_format.type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE && actualBuffer->m.planes != NULL) {
+                for (unsigned int i = 0; i < tempBuffer.length && i < actualBuffer->length; i++) {
+                        actualBuffer->m.planes[i].bytesused = planes[i].bytesused;
+                        actualBuffer->m.planes[i].length = planes[i].length;
+                        actualBuffer->m.planes[i].data_offset = planes[i].data_offset;
+                }
+        }
+
+        return actualBuffer;
 }
 
 int V4L2VideoDevice::waitForNextBuffer(int timeout)
