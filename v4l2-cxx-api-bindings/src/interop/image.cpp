@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Peter Martienssen
+// SPDX-License-Identifier: MIT
+
 #include <interop/image.hpp>
 #include <v4l2image.hpp>
 #include <string>

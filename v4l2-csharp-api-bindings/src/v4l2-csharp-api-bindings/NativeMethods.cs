@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Peter Martienssen
+// SPDX-License-Identifier: MIT
+
 using System;
 using System.Runtime.InteropServices;
 

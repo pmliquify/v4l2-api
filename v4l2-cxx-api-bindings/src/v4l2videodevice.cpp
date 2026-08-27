@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Peter Martienssen
+// SPDX-License-Identifier: MIT
+
 #include <v4l2videodevice.hpp>
 #include <errno.hpp>
 #include <iostream>

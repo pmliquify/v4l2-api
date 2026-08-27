@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Peter Martienssen
+# SPDX-License-Identifier: MIT
+
 cmake_minimum_required(VERSION 3.5.0)
 
 project(v4l2-cxx-api 

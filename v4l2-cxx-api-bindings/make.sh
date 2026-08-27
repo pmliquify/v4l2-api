@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (c) 2026 Peter Martienssen
+# SPDX-License-Identifier: MIT
+
 SCRIPT_DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 RELEASE_DIR=$SCRIPT_DIR/release
 
